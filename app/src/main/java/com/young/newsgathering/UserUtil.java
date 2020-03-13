@@ -40,11 +40,20 @@ public class UserUtil {
         }
     }
 
+    public void updateAvatar(String url) {
+        this.user.setAvatar(url);
+        save(this.user);
+    }
+
     public void logout() {
         this.user = null;
         SharedPreferences spf = Utils.getApp().getSharedPreferences("news", 0);
         SharedPreferences.Editor editor = spf.edit();
         editor.putString("user", "");
         editor.apply();
+    }
+
+    public boolean isAdmin() {
+        return getUser().getType().equals("管理员");
     }
 }

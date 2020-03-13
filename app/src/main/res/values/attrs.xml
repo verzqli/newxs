@@ -13,4 +13,9 @@
         <attr name="line_rightIcon_height" format="dimension"/>
         <attr name="line_visible" format="boolean"/>
     </declare-styleable>
+
+    <declare-styleable name="QMUILoadingView">
+        <attr name="qmui_loading_view_size" format="dimension"/>
+        <attr name="qmui_loading_view_color" format="color"/>
+    </declare-styleable>
 </resources>

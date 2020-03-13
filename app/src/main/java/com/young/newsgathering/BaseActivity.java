@@ -9,7 +9,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.young.newsgathering.view.LoadDialog;
+
 public abstract class BaseActivity extends AppCompatActivity {
+    private LoadDialog dialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,5 +61,15 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void baseStartActivity(Class clazz) {
         startActivity(new Intent(this, clazz));
+    }
+
+    public void showLoadDialog() {
+        if (dialog == null) {
+            dialog = LoadDialog.newInstance();
+        }
+        dialog.show(getSupportFragmentManager());
+    }
+    public void hideLoadDialog() {
+       dialog.dismiss();
     }
 }

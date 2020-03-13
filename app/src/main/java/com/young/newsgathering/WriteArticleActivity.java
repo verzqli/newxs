@@ -10,12 +10,17 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.young.newsgathering.entity.Article;
+import com.young.newsgathering.entity.User;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
 
 import java.util.List;
 import java.util.Set;
+
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
 
 public class WriteArticleActivity extends BaseActivity {
     private static final int REQUEST_CODE_CHOOSE = 1001;
@@ -86,7 +91,22 @@ public class WriteArticleActivity extends BaseActivity {
             ToastUtils.showShort("请输入内容");
             return;
         }
-
+        Article article = new Article();
+        article.setTitle(title);
+        article.setContent(content);
+        article.setEditor(UserUtil.getInstance().getUser().getName());
+        article.setEditorId(UserUtil.getInstance().getUser().getObjectId());
+        article.save(new SaveListener<String>() {
+            @Override
+            public void done(String s, BmobException e) {
+                if (e == null) {
+                    ToastUtils.showShort("添加成功");
+                    finish();
+                } else {
+                    ToastUtils.showShort("添加失败,请重试");
+                }
+            }
+        });
     }
 
     @Override

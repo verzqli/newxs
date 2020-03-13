@@ -47,6 +47,7 @@ public class MainActivity extends BaseActivity {
             ToastUtils.showShort("请输入密码");
             return;
         }
+        showLoadDialog();
         BmobQuery<User> query = new BmobQuery<User>();
         query.addWhereEqualTo("account", account);
         query.findObjects(new FindListener<User>() {
@@ -67,6 +68,7 @@ public class MainActivity extends BaseActivity {
                 } else {
                     Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
                 }
+                hideLoadDialog();
             }
         });
 
