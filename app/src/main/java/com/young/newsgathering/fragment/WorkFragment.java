@@ -62,7 +62,7 @@ public class WorkFragment extends Fragment {
 
     private void initEvent() {
         writeLayout.setOnClickListener(v -> startActivity(new Intent(getActivity(), ArticleListActivity.class)));
-        //管理员才有审稿功能
+        //总编才有审稿功能
         if (UserUtil.getInstance().isAdmin()) {
             editLayout.setVisibility(View.VISIBLE);
             editLayout.setOnClickListener(v -> startActivity(new Intent(getActivity(), ArticleListActivity.class)));

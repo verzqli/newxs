@@ -54,6 +54,6 @@ public class UserUtil {
     }
 
     public boolean isAdmin() {
-        return getUser().getType().equals("管理员");
+        return getUser().getType().equals("总编");
     }
 }

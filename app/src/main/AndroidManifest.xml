@@ -17,7 +17,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ArticleDetailActivity"></activity>
+        <activity android:name=".ArticleReviewActivity"></activity>
+        <activity android:name=".ArticleDetailActivity" />
         <activity android:name=".ResetPwdActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".WriteArticleActivity" />

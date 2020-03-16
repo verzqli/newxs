@@ -25,12 +25,13 @@ import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
+/**
+ * 员工和总编的稿件列表
+ */
 public class ArticleListActivity extends BaseActivity {
     private RecyclerView recyclerView;
     private List<Article> list;
     private ArticleListAdapter adapter;
-    //这个稿件列表页面普通员工和管理员公用，用一个字段区分
-    private boolean isAdmin = false;
 
     @Override
     protected int getLayoutId() {
@@ -39,12 +40,7 @@ public class ArticleListActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        isAdmin = UserUtil.getInstance().isAdmin();
-        if (isAdmin) {
-            setToolBar("审稿");
-        } else {
-            setToolBar("发稿", R.drawable.icon_toolbar_menu);
-        }
+        setToolBar("发稿", R.drawable.icon_toolbar_menu);
         recyclerView = findViewById(R.id.recyclerview);
 
     }
@@ -64,33 +60,57 @@ public class ArticleListActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        BmobQuery<Article> bmobQuery = new BmobQuery<>();
-
-        if (isAdmin) {
-            //管理员查询条件，只查询审核中的稿件
-            bmobQuery.addWhereEqualTo("status", "审核中");
-        } else {
-            //非管理员查询条件，只查询和当前用户相同id发的稿件
+        if (UserUtil.getInstance().isAdmin()) {
+            //总编查询条件，查询自己发的稿件
+            BmobQuery<Article> bmobQuery = new BmobQuery<>();
             bmobQuery.addWhereEqualTo("editorId", UserUtil.getInstance().getUser().getObjectId());
-        }
-        bmobQuery.findObjects(new FindListener<Article>() {
-            @Override
-            public void done(List<Article> list, BmobException e) {
-                if (e == null) {
-                    if (list.size() == 0) {
-                        ToastUtils.showShort("暂无稿件");
-                    } else {
+            bmobQuery.findObjects(new FindListener<Article>() {
+                @Override
+                public void done(List<Article> list, BmobException e) {
+                    if (e == null) {
+                        if (list.size() == 0) {
+                            ToastUtils.showShort("暂无稿件");
+                        }
                         adapter.setNewData(list);
+                    } else {
+                        ToastUtils.showShort("加载数据异常，请重试");
                     }
-                } else {
-                    ToastUtils.showShort("加载数据异常，请重试");
                 }
-            }
-        });
+            });
+        } else {
+            //员工查询条件，只查询和当前用户相同id发的稿件，
+            BmobQuery<Article> queryUser = new BmobQuery<>();
+            queryUser.addWhereEqualTo("editorId", UserUtil.getInstance().getUser().getObjectId());
+            //查询该员工状态为草稿（稿件写完未发稿）的稿件
+            BmobQuery<Article> queryStatus = new BmobQuery<>();
+            queryStatus.addWhereEqualTo("status", "草稿");
+            //两个条件联合查询=员工查询自己发的且状态为草稿的稿件
+            List<BmobQuery<Article>> queries = new ArrayList<>();
+            queries.add(queryUser);
+            queries.add(queryStatus);
+            BmobQuery<Article> query = new BmobQuery<>();
+            query.and(queries);
+            query.findObjects(new FindListener<Article>() {
+                @Override
+                public void done(List<Article> list, BmobException e) {
+                    if (e == null) {
+                        if (list.size() == 0) {
+                            ToastUtils.showShort("暂无稿件");
+                        }
+                        adapter.setNewData(list);
+                    } else {
+                        ToastUtils.showShort("加载数据异常，请重试");
+                    }
+                }
+            });
+        }
+
     }
 
     @Override
     public void menuClick() {
+        //防止数据混淆，写稿页面知道当前是写稿，而不是修改
+        Utils.article = null;
         baseStartActivity(WriteArticleActivity.class);
     }
 
