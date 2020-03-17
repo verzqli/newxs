@@ -78,7 +78,9 @@ public class ArticleDetailActivity extends BaseActivity {
      * 底部弹出填写退回原因的弹窗
      */
     private void showReturnDialog() {
-        ReviewDialog.newInstance().show(getSupportFragmentManager());
+        ReviewDialog.newInstance()
+                .setConfirmClickListener(this::returnArticle)
+                .show(getSupportFragmentManager());
     }
 
     //修改稿件，跳转到写稿界面（员工）
@@ -125,6 +127,8 @@ public class ArticleDetailActivity extends BaseActivity {
         showLoadDialog();
         article.setStatus("退回");
         article.setReason(reason);
+        article.setReviewer(UserUtil.getInstance().getUser().getName());
+        article.setReviewTime(new Date().getTime());
         article.update(article.getObjectId(), new UpdateListener() {
             @Override
             public void done(BmobException e) {

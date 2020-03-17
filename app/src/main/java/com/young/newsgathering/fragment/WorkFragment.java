@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.young.newsgathering.ArticleListActivity;
+import com.young.newsgathering.ArticleReviewActivity;
+import com.young.newsgathering.ProgressActivity;
 import com.young.newsgathering.R;
 import com.young.newsgathering.UserUtil;
 import com.young.newsgathering.entity.User;
@@ -65,7 +67,8 @@ public class WorkFragment extends Fragment {
         //总编才有审稿功能
         if (UserUtil.getInstance().isAdmin()) {
             editLayout.setVisibility(View.VISIBLE);
-            editLayout.setOnClickListener(v -> startActivity(new Intent(getActivity(), ArticleListActivity.class)));
+            editLayout.setOnClickListener(v -> startActivity(new Intent(getActivity(), ArticleReviewActivity.class)));
         }
+        progressLayout.setOnClickListener(v -> startActivity(new Intent(getActivity(), ProgressActivity.class)));
     }
 }

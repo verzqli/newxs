@@ -23,12 +23,14 @@ public class HomeActivity extends BaseActivity {
     private LinearLayout newsLayout;
     private LinearLayout personalLayout;
     private List<Fragment> list;
+    private NewFragment fragment;
 
     @Override
     protected void initEvent() {
         list = new ArrayList<>();
+        fragment = NewFragment.newInstance();
         list.add(WorkFragment.newInstance());
-        list.add(NewFragment.newInstance());
+        list.add(fragment);
         list.add(PersonalFragment.newInstance());
         viewPager.setAdapter(new HomeAdapter(getSupportFragmentManager()));
         workLayout.setOnClickListener(v -> viewPager.setCurrentItem(0, false));
@@ -47,6 +49,17 @@ public class HomeActivity extends BaseActivity {
     @Override
     protected int getLayoutId() {
         return R.layout.activity_home;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (viewPager.getCurrentItem() == 1) {
+            if (!fragment.onBackPressed()) {
+                super.onBackPressed();
+            }
+        } else {
+            super.onBackPressed();
+        }
     }
 
     public class HomeAdapter extends FragmentPagerAdapter {
