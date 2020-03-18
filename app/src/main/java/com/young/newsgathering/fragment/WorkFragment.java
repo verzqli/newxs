@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 
 import com.young.newsgathering.ArticleListActivity;
 import com.young.newsgathering.ArticleReviewActivity;
+import com.young.newsgathering.ChartActivity;
 import com.young.newsgathering.ProgressActivity;
 import com.young.newsgathering.R;
 import com.young.newsgathering.UserUtil;
@@ -70,5 +71,6 @@ public class WorkFragment extends Fragment {
             editLayout.setOnClickListener(v -> startActivity(new Intent(getActivity(), ArticleReviewActivity.class)));
         }
         progressLayout.setOnClickListener(v -> startActivity(new Intent(getActivity(), ProgressActivity.class)));
+        chartLayout.setOnClickListener(v -> startActivity(new Intent(getActivity(), ChartActivity.class)));
     }
 }
