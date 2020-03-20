@@ -10,8 +10,8 @@
         android:id="@+id/toolbar_back_btn"
         android:layout_width="40dp"
         android:layout_height="45dp"
-        android:padding="15dp"
-        android:src="@drawable/toolbar_back" />
+        android:padding="12dp"
+        android:src="@drawable/icon_toolbar_back" />
 
     <TextView
         android:id="@+id/toolbar_title_text"
@@ -19,7 +19,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="start"
-        android:padding="15dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:layout_marginStart="5dp"
         android:textColor="#fff"
         android:textSize="18sp" />
 
@@ -36,7 +38,7 @@
         android:layout_height="wrap_content"
         android:padding="15dp"
         android:text="保存"
-        android:textColor="#333"
+        android:textColor="#FFF"
         android:textSize="20sp"
         android:visibility="gone" />
 </LinearLayout>
