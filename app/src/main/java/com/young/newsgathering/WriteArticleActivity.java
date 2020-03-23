@@ -93,7 +93,6 @@ public class WriteArticleActivity extends BaseActivity {
                 .theme(R.style.Matisse_Zhihu)
                 .imageEngine(new GlideEngine())
                 .forResult(REQUEST_CODE_CHOOSE);
-
     }
 
     @Override

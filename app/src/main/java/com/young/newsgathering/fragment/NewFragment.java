@@ -14,7 +14,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.gyf.immersionbar.ImmersionBar;
 import com.young.newsgathering.R;
+import com.young.newsgathering.util.LollipopFixedWebView;
 
 import java.io.File;
 
@@ -22,7 +24,7 @@ import java.io.File;
  * A simple {@link Fragment} subclass.
  */
 public class NewFragment extends Fragment {
-    private WebView mWebview;
+    private LollipopFixedWebView mWebview;
 
     public NewFragment() {
         // Required empty public constructor
@@ -37,6 +39,7 @@ public class NewFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_news, container, false);
+        ImmersionBar.with(this).statusBarDarkFont(true).init();
         initView(view);
         return view;
     }

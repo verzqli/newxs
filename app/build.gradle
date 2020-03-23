@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.young.newsgathering"
-        minSdkVersion 16
+        minSdkVersion 17
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -57,5 +57,9 @@ dependencies {
 
     //图标框架
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    //权限框架
+    implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
+    //沉浸式状态栏
+    implementation 'com.gyf.immersionbar:immersionbar:3.0.0-beta01'
 
 }

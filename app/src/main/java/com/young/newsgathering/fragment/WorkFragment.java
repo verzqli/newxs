@@ -10,9 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.gyf.immersionbar.ImmersionBar;
 import com.young.newsgathering.ArticleListActivity;
 import com.young.newsgathering.ArticleReviewActivity;
 import com.young.newsgathering.ChartActivity;
+import com.young.newsgathering.MaterialActivity;
 import com.young.newsgathering.ProgressActivity;
 import com.young.newsgathering.R;
 import com.young.newsgathering.UserUtil;
@@ -49,6 +51,7 @@ public class WorkFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_work, container, false);
+        ImmersionBar.with(this).statusBarDarkFont(true).init();
         initView(view);
         initEvent();
         return view;
@@ -72,5 +75,6 @@ public class WorkFragment extends Fragment {
         }
         progressLayout.setOnClickListener(v -> startActivity(new Intent(getActivity(), ProgressActivity.class)));
         chartLayout.setOnClickListener(v -> startActivity(new Intent(getActivity(), ChartActivity.class)));
+        materialLayout.setOnClickListener(v -> startActivity(new Intent(getActivity(), MaterialActivity.class)));
     }
 }

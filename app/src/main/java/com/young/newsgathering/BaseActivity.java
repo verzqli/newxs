@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.gyf.immersionbar.ImmersionBar;
 import com.young.newsgathering.view.LoadDialog;
 
 public abstract class BaseActivity extends AppCompatActivity {
@@ -18,6 +19,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
+        ImmersionBar.with(this).statusBarDarkFont(true).init();
         initView();
         initEvent();
     }

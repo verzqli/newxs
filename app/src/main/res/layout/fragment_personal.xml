@@ -11,14 +11,16 @@
         android:layout_height="wrap_content">
 
         <ImageView
+            android:id="@+id/avatar_blur_bg"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="180dp"
+            android:scaleType="centerCrop"
             android:background="#e5e5e5" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/avatar_image"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_gravity="center" />
     </FrameLayout>
 
@@ -129,9 +131,9 @@
             android:textSize="16sp" />
 
         <ImageView
-            android:layout_width="8dp"
-            android:layout_height="13dp"
-            android:src="@drawable/icon_toolbar_back" />
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@drawable/icon_arrow_right" />
     </LinearLayout>
 
     <View

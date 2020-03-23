@@ -14,22 +14,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.gyf.immersionbar.ImmersionBar;
 import com.young.newsgathering.MainActivity;
 import com.young.newsgathering.R;
 import com.young.newsgathering.ResetPwdActivity;
 import com.young.newsgathering.ToastUtils;
 import com.young.newsgathering.UserUtil;
 import com.young.newsgathering.entity.User;
+import com.young.newsgathering.util.BlurTransformation;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
 
-import java.io.File;
-
-import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
-import cn.bmob.v3.listener.UploadFileListener;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -39,7 +37,7 @@ import static android.app.Activity.RESULT_OK;
 public class PersonalFragment extends Fragment {
     private static final int REQUEST_CODE_CHOOSE = 1002;
     private ImageView avatarImage;
-
+    private ImageView avatarBlurImage;
     public PersonalFragment() {
         // Required empty public constructor
     }
@@ -53,6 +51,7 @@ public class PersonalFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_personal, container, false);
+        ImmersionBar.with(this).statusBarDarkFont( true).init();
         initView(view);
         initEvent();
         return view;
@@ -66,10 +65,17 @@ public class PersonalFragment extends Fragment {
         ((TextView) view.findViewById(R.id.phone_text)).setText(user.getPhone());
 
         avatarImage = view.findViewById(R.id.avatar_image);
+        avatarBlurImage=view.findViewById(R.id.avatar_blur_bg);
         //加载用户头像
         Glide.with(avatarImage.getContext())
                 .load(UserUtil.getInstance().getUser().getAvatar())
+                .placeholder(R.drawable.icon_avatar)
                 .into(avatarImage);
+        Glide.with(avatarBlurImage.getContext())
+                .load(UserUtil.getInstance().getUser().getAvatar())
+                .transform(new BlurTransformation())
+                .placeholder(R.drawable.icon_avatar)
+                .into(avatarBlurImage);
         //点击头像进入相册
         avatarImage.setOnClickListener(v -> open());
         //跳转设置密码
@@ -113,7 +119,13 @@ public class PersonalFragment extends Fragment {
             UserUtil.getInstance().updateAvatar(url);
             Glide.with(avatarImage.getContext())
                     .load(UserUtil.getInstance().getUser().getAvatar())
+                    .placeholder(R.drawable.icon_avatar)
                     .into(avatarImage);
+            Glide.with(avatarBlurImage.getContext())
+                    .load(UserUtil.getInstance().getUser().getAvatar())
+                    .transform(new BlurTransformation())
+                    .placeholder(R.drawable.icon_avatar)
+                    .into(avatarBlurImage);
             updateAvatar(url);
         }
     }

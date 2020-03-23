@@ -8,13 +8,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="15dp"
+        android:paddingTop="30dp"
+        android:paddingBottom="15dp"
         android:gravity="center"
         android:textSize="18sp"
         android:background="@color/themeColor"
         android:textColor="#FFF"
         android:text="热点新闻"/>
-    <WebView
+    <com.young.newsgathering.util.LollipopFixedWebView
         android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

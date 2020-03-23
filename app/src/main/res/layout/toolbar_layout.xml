@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:background="#1E89FC"
+    android:paddingTop="24dp"
     android:orientation="horizontal">
 
     <ImageView
@@ -39,6 +40,6 @@
         android:padding="15dp"
         android:text="保存"
         android:textColor="#FFF"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:visibility="gone" />
 </LinearLayout>
