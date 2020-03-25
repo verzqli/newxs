@@ -2,6 +2,7 @@ package com.young.newsgathering;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.zhihu.matisse.Matisse;
@@ -19,27 +20,22 @@ public class MaterialActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-            setToolBar("素材库");
+        setToolBar("素材库");
     }
 
     @Override
     protected void initEvent() {
-        findViewById(R.id.material_image_layout).setOnClickListener(v->{
-            openMedia(MimeType.ofImage());
+        findViewById(R.id.material_image_layout).setOnClickListener(v -> {
+            openMedia(true);
         });
-        findViewById(R.id.material_video_layout).setOnClickListener(v->{
-            openMedia(MimeType.ofVideo());
+        findViewById(R.id.material_video_layout).setOnClickListener(v -> {
+            openMedia(false);
         });
     }
 
-    private void openMedia(Set<MimeType> type) {
-        Matisse.from(this)
-                .choose(type)
-                .showSingleMediaType(true)
-                .capture(false)
-                .maxSelectable(1)
-                .theme(R.style.Matisse_Zhihu)
-                .imageEngine(new GlideEngine())
-                .forResult(1);
+    private void openMedia(boolean isImage) {
+        Intent intent = new Intent(this, MaterialListActivity.class);
+        intent.putExtra("isImage", isImage);
+        startActivity(intent);
     }
 }

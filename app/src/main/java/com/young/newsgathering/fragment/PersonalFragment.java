@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,8 +28,15 @@ import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
 
+import java.io.File;
+
+import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
+import cn.bmob.v3.listener.UploadFileListener;
+import top.zibin.luban.CompressionPredicate;
+import top.zibin.luban.Luban;
+import top.zibin.luban.OnCompressListener;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -38,6 +47,8 @@ public class PersonalFragment extends Fragment {
     private static final int REQUEST_CODE_CHOOSE = 1002;
     private ImageView avatarImage;
     private ImageView avatarBlurImage;
+    private String outPath = Environment.getExternalStorageDirectory() + "/pic";
+
     public PersonalFragment() {
         // Required empty public constructor
     }
@@ -51,7 +62,7 @@ public class PersonalFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_personal, container, false);
-        ImmersionBar.with(this).statusBarDarkFont( true).init();
+        ImmersionBar.with(this).statusBarDarkFont(true).init();
         initView(view);
         initEvent();
         return view;
@@ -65,7 +76,7 @@ public class PersonalFragment extends Fragment {
         ((TextView) view.findViewById(R.id.phone_text)).setText(user.getPhone());
 
         avatarImage = view.findViewById(R.id.avatar_image);
-        avatarBlurImage=view.findViewById(R.id.avatar_blur_bg);
+        avatarBlurImage = view.findViewById(R.id.avatar_blur_bg);
         //加载用户头像
         Glide.with(avatarImage.getContext())
                 .load(UserUtil.getInstance().getUser().getAvatar())
@@ -126,8 +137,55 @@ public class PersonalFragment extends Fragment {
                     .transform(new BlurTransformation())
                     .placeholder(R.drawable.icon_avatar)
                     .into(avatarBlurImage);
-            updateAvatar(url);
+            //压缩图片
+            compressImage(url);
         }
+    }
+
+    private void compressImage(String url) {
+        Luban.with(getActivity())
+                .load(url)
+                .ignoreBy(100)
+                .setTargetDir(outPath)
+                .filter(new CompressionPredicate() {
+                    @Override
+                    public boolean apply(String path) {
+                        return !(TextUtils.isEmpty(path) || path.toLowerCase().endsWith(".gif"));
+                    }
+                })
+                .setCompressListener(new OnCompressListener() {
+                    @Override
+                    public void onStart() {
+                        // TODO 压缩开始前调用，可以在方法内启动 loading UI
+                    }
+
+                    @Override
+                    public void onSuccess(File file) {
+                        // TODO 压缩成功后调用，返回压缩后的图片文件
+
+                        BmobFile bmobFile = new BmobFile(file);
+                        bmobFile.uploadblock(new UploadFileListener() {
+                            @Override
+                            public void done(BmobException e) {
+                                if (e == null) {
+                                    updateAvatar(bmobFile.getFileUrl());
+                                } else {
+                                    ToastUtils.showShort("图片上传失败，请重试");
+                                }
+                            }
+
+                            @Override
+                            public void onProgress(Integer value) {
+                                // 返回的上传进度（百分比）
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        // TODO 当压缩过程出现问题时调用
+                    }
+                }).launch();
     }
 
     private void updateAvatar(String fileUrl) {
