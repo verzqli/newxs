@@ -12,12 +12,15 @@
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/icon_login_logo"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MaterialListActivity"></activity>
+        <activity android:name=".PreviewVideoActivity"></activity>
+        <activity android:name=".PreviewImageActivity" />
+        <activity android:name=".ReviseArticleActivity" />
+        <activity android:name=".MaterialListActivity" />
         <activity android:name=".ChartActivity" />
         <activity android:name=".MaterialActivity" />
         <activity android:name=".ProgressActivity" />

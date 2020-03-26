@@ -9,26 +9,12 @@
     <!-- TODO: Update blank fragment layout -->
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
->
-
+        android:layout_height="wrap_content">
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:background="#ccc"
-
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:paddingTop="30dp"
-            android:paddingBottom="15dp"
-
-            android:text="工作台"
-            android:textColor="#999"
-            android:textSize="20sp" />
+            android:layout_height="150dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/icon_bg_work_title"/>
     </FrameLayout>
 
     <LinearLayout
@@ -68,7 +54,7 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="#ccc" />
+                android:src="@drawable/icon_write_article"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -90,7 +76,7 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="#ccc" />
+                android:src="@drawable/icon_article_progress"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -113,7 +99,7 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="#ccc" />
+                android:src="@drawable/icon_article_review"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -162,7 +148,7 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="#ccc" />
+                android:src="@drawable/icon_material"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -184,7 +170,7 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="#ccc" />
+                android:src="@drawable/icon_chart"/>
 
             <TextView
                 android:layout_width="wrap_content"

@@ -25,6 +25,30 @@ public class Article extends BmobObject {
     private String reviewer;
     //审稿时间，给稿件退回和签发的时间
     private String reviewTime;
+    //稿件素材链接
+    private String materialUrl;
+    //稿件素材类型，0为图片，1为视频
+    private String materialType;
+
+    public String getMaterialType() {
+        return materialType;
+    }
+
+    public boolean isImageMaterial() {
+        return "0".equals(materialType);
+    }
+
+    public void setMaterialType(String materialType) {
+        this.materialType = materialType;
+    }
+
+    public String getMaterialUrl() {
+        return materialUrl;
+    }
+
+    public void setMaterialUrl(String materialUrl) {
+        this.materialUrl = materialUrl;
+    }
 
     public String getReviewer() {
         return reviewer;

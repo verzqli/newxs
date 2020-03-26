@@ -1,19 +1,15 @@
 package com.young.newsgathering;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
-import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
-import top.zibin.luban.CompressionPredicate;
 import top.zibin.luban.Luban;
 import top.zibin.luban.OnCompressListener;
 
@@ -23,7 +19,6 @@ import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -64,9 +59,8 @@ public class MaterialListActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        setToolBar("", R.drawable.icon_toolbar_menu);
         isImage = getIntent().getBooleanExtra("isImage", true);
-        ToastUtils.showShort(isImage ? "0" : "1");
+        setToolBar(isImage ? "图片素材" : "视频素材", R.drawable.icon_toolbar_menu);
         list = new ArrayList<>();
         adapter = new MaterialListAdapter(list);
         materialRecyclerView = findViewById(R.id.material_recyclerview);
@@ -81,15 +75,16 @@ public class MaterialListActivity extends BaseActivity {
     @Override
     protected void initEvent() {
         requestmaterialData();
-        ;
     }
 
     private void requestmaterialData() {
+        showLoadDialog();
         BmobQuery<Material> bmobQuery = new BmobQuery<>();
         bmobQuery.addWhereEqualTo("type", isImage ? "0" : "1");
         bmobQuery.findObjects(new FindListener<Material>() {
             @Override
             public void done(List<Material> list, BmobException e) {
+                hideLoadDialog();
                 if (e == null) {
                     if (list.size() == 0) {
                         ToastUtils.showShort("暂无素材");
@@ -124,10 +119,16 @@ public class MaterialListActivity extends BaseActivity {
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK && data != null) {
             //图片路径 同样视频地址也是这个 根据requestCode
             String url = Matisse.obtainPathResult(data).get(0);
+
             //压缩图片
             if (isImage) {
                 compressImage(url);
             } else {
+                File file = new File(url);
+                if (file.length() > 15728640) {
+                    ToastUtils.showShort("请选择大小15MB以下的视频");
+                    return;
+                }
                 uploadFile(new File(url));
             }
         }
@@ -139,40 +140,40 @@ public class MaterialListActivity extends BaseActivity {
                 .load(url)
                 .ignoreBy(100)
                 .setTargetDir(outPath)
-                .filter(new CompressionPredicate() {
-                    @Override
-                    public boolean apply(String path) {
-                        return !(TextUtils.isEmpty(path) || path.toLowerCase().endsWith(".gif"));
-                    }
-                })
+                .filter(path -> !(TextUtils.isEmpty(path) || path.toLowerCase().endsWith(".gif")))
                 .setCompressListener(new OnCompressListener() {
                     @Override
                     public void onStart() {
                         // TODO 压缩开始前调用，可以在方法内启动 loading UI
+                        showLoadDialog();
                     }
 
                     @Override
                     public void onSuccess(File file) {
                         // TODO 压缩成功后调用，返回压缩后的图片文件
 
-                            uploadFile(file);
+                        uploadFile(file);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         // TODO 当压缩过程出现问题时调用
+                        hideLoadDialog();
                     }
                 }).launch();
     }
 
     private void uploadFile(File file) {
+        showLoadDialog();
         BmobFile bmobFile = new BmobFile(file);
         bmobFile.uploadblock(new UploadFileListener() {
             @Override
             public void done(BmobException e) {
+
                 if (e == null) {
                     uploadMaterial(bmobFile.getFileUrl());
                 } else {
+                    hideLoadDialog();
                     ToastUtils.showShort("上传失败，请重试");
                 }
             }
@@ -180,6 +181,7 @@ public class MaterialListActivity extends BaseActivity {
             @Override
             public void onProgress(Integer value) {
                 // 返回的上传进度（百分比）
+                setDialogContent("正在上传:" + value + "%");
             }
         });
     }
@@ -191,6 +193,7 @@ public class MaterialListActivity extends BaseActivity {
         material.save(new SaveListener<String>() {
             @Override
             public void done(String s, BmobException e) {
+                hideLoadDialog();
                 if (e == null) {
                     ToastUtils.showShort("添加素材成功");
                     adapter.addData(material);
@@ -210,41 +213,7 @@ public class MaterialListActivity extends BaseActivity {
         @Override
         protected void convert(BaseViewHolder helper, Material item) {
             MaterialItemImage imageView = helper.getView(R.id.image);
-            if (isImage){
-                Glide.with(MaterialListActivity.this).load(item.getUrl()).into(imageView);
-            }else{
-                imageView.setImageBitmap(createVideoThumbnail(item.getUrl(),200,200));
-            }
+            imageView.setUrl(item.getUrl(), isImage);
         }
-    }
-
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    private Bitmap createVideoThumbnail(String url, int width, int height) {
-        Bitmap bitmap = null;
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        int kind = MediaStore.Video.Thumbnails.MINI_KIND;
-        try {
-            if (Build.VERSION.SDK_INT >= 14) {
-                retriever.setDataSource(url, new HashMap<String, String>());
-            } else {
-                retriever.setDataSource(url);
-            }
-            bitmap = retriever.getFrameAtTime();
-        } catch (IllegalArgumentException ex) {
-            // Assume this is a corrupt video file
-        } catch (RuntimeException ex) {
-            // Assume this is a corrupt video file.
-        } finally {
-            try {
-                retriever.release();
-            } catch (RuntimeException ex) {
-                // Ignore failures while cleaning up.
-            }
-        }
-        if (kind == MediaStore.Images.Thumbnails.MICRO_KIND && bitmap != null) {
-            bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height,
-                    ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-        }
-        return bitmap;
     }
 }

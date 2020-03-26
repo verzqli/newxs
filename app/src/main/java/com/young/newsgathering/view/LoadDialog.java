@@ -4,6 +4,7 @@ import com.young.newsgathering.R;
 
 public class LoadDialog extends BaseDialog {
     private String content = "正在加载...";
+    private DialogViewHolder holder;
 
     public static LoadDialog newInstance() {
 
@@ -19,11 +20,11 @@ public class LoadDialog extends BaseDialog {
     public void convertView(DialogViewHolder holder, BaseDialog dialog) {
         setOutCancel(false);
         setDimAmout(0f);
-        holder.setText(R.id.load_content, content);
+        this.holder = holder;
     }
 
-    public LoadDialog setContent(String content) {
-        this.content = content;
-        return this;
+    public void setContent(String content) {
+        this.holder.setText(R.id.load_content, content);
     }
+
 }

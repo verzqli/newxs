@@ -33,7 +33,7 @@ public class ArticleReviewActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        setToolBar("审稿", R.drawable.icon_toolbar_menu);
+        setToolBar("审稿");
         recyclerView = findViewById(R.id.review_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

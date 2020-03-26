@@ -60,6 +60,8 @@ public class ArticleListActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        showLoadDialog();
+
         if (UserUtil.getInstance().isAdmin()) {
             //总编查询条件，查询自己发的稿件
             BmobQuery<Article> bmobQuery = new BmobQuery<>();
@@ -67,6 +69,7 @@ public class ArticleListActivity extends BaseActivity {
             bmobQuery.findObjects(new FindListener<Article>() {
                 @Override
                 public void done(List<Article> list, BmobException e) {
+                    hideLoadDialog();
                     if (e == null) {
                         if (list.size() == 0) {
                             ToastUtils.showShort("暂无稿件");
@@ -81,18 +84,10 @@ public class ArticleListActivity extends BaseActivity {
             //员工查询条件，只查询和当前用户相同id发的稿件，
             BmobQuery<Article> queryUser = new BmobQuery<>();
             queryUser.addWhereEqualTo("editorId", UserUtil.getInstance().getUser().getObjectId());
-            //查询该员工状态为草稿（稿件写完未发稿）的稿件
-            BmobQuery<Article> queryStatus = new BmobQuery<>();
-            queryStatus.addWhereEqualTo("status", "草稿");
-            //两个条件联合查询=员工查询自己发的且状态为草稿的稿件
-            List<BmobQuery<Article>> queries = new ArrayList<>();
-            queries.add(queryUser);
-            queries.add(queryStatus);
-            BmobQuery<Article> query = new BmobQuery<>();
-            query.and(queries);
-            query.findObjects(new FindListener<Article>() {
+            queryUser.findObjects(new FindListener<Article>() {
                 @Override
                 public void done(List<Article> list, BmobException e) {
+                    hideLoadDialog();
                     if (e == null) {
                         if (list.size() == 0) {
                             ToastUtils.showShort("暂无稿件");

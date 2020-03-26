@@ -71,7 +71,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         dialog.show(getSupportFragmentManager());
     }
+
     public void hideLoadDialog() {
-       dialog.dismiss();
+        dialog.dismiss();
+    }
+
+    public void setDialogContent(String content) {
+        dialog.setContent(content);
     }
 }

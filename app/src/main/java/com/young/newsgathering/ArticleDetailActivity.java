@@ -5,10 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.young.newsgathering.entity.Article;
+import com.young.newsgathering.view.PreviewImageView;
 import com.young.newsgathering.view.ReviewDialog;
 
 import java.util.Date;
@@ -39,6 +42,7 @@ public class ArticleDetailActivity extends BaseActivity {
         ((TextView) findViewById(R.id.article_create_text)).setText(article.getCreatedAt());
         ((TextView) findViewById(R.id.article_length_text)).setText("字数: " + article.getContent().length());
         ((TextView) findViewById(R.id.article_content_text)).setText(article.getContent());
+        ((PreviewImageView) findViewById(R.id.article_material_image)).setUrl(article.getMaterialUrl(), article.isImageMaterial());
     }
 
     @Override
@@ -58,19 +62,23 @@ public class ArticleDetailActivity extends BaseActivity {
             }
 
         } else {
-            userEditLayout.setVisibility(View.VISIBLE);
-            //作废点击
-            userEditLayout.getChildAt(0).setOnClickListener(v -> {
-                deleteArticle();
-            });
-            //修改点击
-            userEditLayout.getChildAt(1).setOnClickListener(v -> {
-                editArticle();
-            });
-            //发稿点击
-            userEditLayout.getChildAt(2).setOnClickListener(v -> {
-                sendArticle();
-            });
+            //只有是草稿的稿件才可以修改
+            if ("草稿".equals(article.getStatus())) {
+                userEditLayout.setVisibility(View.VISIBLE);
+                //作废点击
+                userEditLayout.getChildAt(0).setOnClickListener(v -> {
+                    deleteArticle();
+                });
+                //修改点击
+                userEditLayout.getChildAt(1).setOnClickListener(v -> {
+                    editArticle();
+                });
+                //发稿点击
+                userEditLayout.getChildAt(2).setOnClickListener(v -> {
+                    sendArticle();
+                });
+            }
+
         }
     }
 
@@ -86,7 +94,7 @@ public class ArticleDetailActivity extends BaseActivity {
     //修改稿件，跳转到写稿界面（员工）
     private void editArticle() {
         Utils.article = article;
-        baseStartActivity(WriteArticleActivity.class);
+        baseStartActivity(ReviseArticleActivity.class);
         finish();
 
     }
