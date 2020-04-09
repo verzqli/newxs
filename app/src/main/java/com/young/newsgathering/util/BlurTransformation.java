@@ -19,7 +19,7 @@ import androidx.annotation.NonNull;
  * <pre>
  *     author: Windows XP
  *     time  : 2019/4/24
- *     desc  :
+ *     desc  : 头像背景模糊效果转换类，无需知道原理，只要知道他是拿来模糊背景的即可
  * </pre>
  */
 public class BlurTransformation extends DIYBitmapTransformation {

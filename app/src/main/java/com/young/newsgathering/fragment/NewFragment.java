@@ -45,7 +45,9 @@ public class NewFragment extends Fragment {
     }
 
     private void initView(View view) {
+
         mWebview = view.findViewById(R.id.webView);
+        //下面都是webview的基础设置
         WebSettings webSettings = mWebview.getSettings();
         // 让WebView能够执行javaScript
         webSettings.setJavaScriptEnabled(true);
@@ -84,6 +86,8 @@ public class NewFragment extends Fragment {
     }
 
     public boolean onBackPressed() {
+        //这是homeactivity传过来的返回键事件，这里看英文名也可以理解，如果这个网页可以返回上一步
+        //就返回，不然就退出，这里把一个boolean传回去，如果为false，那边就直接调用super.onBackPressed()就直接推出了
         if (mWebview.canGoBack()) {
             mWebview.goBack();
             return true;

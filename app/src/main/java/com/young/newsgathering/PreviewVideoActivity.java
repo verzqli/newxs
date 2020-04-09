@@ -11,8 +11,10 @@ import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 
+/**
+ * 视频预览界面
+ */
 public class PreviewVideoActivity extends BaseActivity {
-
 
     @Override
     protected int getLayoutId() {

@@ -66,6 +66,8 @@ public class ArticleListActivity extends BaseActivity {
             //总编查询条件，查询自己发的稿件
             BmobQuery<Article> bmobQuery = new BmobQuery<>();
             bmobQuery.addWhereEqualTo("editorId", UserUtil.getInstance().getUser().getObjectId());
+            //时间倒序，最新的在最上面
+            bmobQuery.order("-updatedAt");
             bmobQuery.findObjects(new FindListener<Article>() {
                 @Override
                 public void done(List<Article> list, BmobException e) {
@@ -84,6 +86,8 @@ public class ArticleListActivity extends BaseActivity {
             //员工查询条件，只查询和当前用户相同id发的稿件，
             BmobQuery<Article> queryUser = new BmobQuery<>();
             queryUser.addWhereEqualTo("editorId", UserUtil.getInstance().getUser().getObjectId());
+            //时间倒序，最新的在最上面
+            queryUser.order("-updatedAt");
             queryUser.findObjects(new FindListener<Article>() {
                 @Override
                 public void done(List<Article> list, BmobException e) {
@@ -102,6 +106,9 @@ public class ArticleListActivity extends BaseActivity {
 
     }
 
+    /**
+     * 右上角按钮点击事件
+     */
     @Override
     public void menuClick() {
         //防止数据混淆，写稿页面知道当前是写稿，而不是修改

@@ -9,7 +9,11 @@ import com.young.newsgathering.entity.User;
 
 import static android.content.Context.MODE_PRIVATE;
 
+/**
+ * 用户信息简单工具类
+ */
 public class UserUtil {
+    //工具类里面保存了一个用户信息类
     private User user;
     private static UserUtil userUtil = new UserUtil();
 
@@ -17,6 +21,10 @@ public class UserUtil {
         return userUtil;
     }
 
+    /**
+     * 将从服务器获取到的用户信息保存在本地，方便下次不用重新登录
+     * @param user
+     */
     public void save(User user) {
         this.user = user;
         SharedPreferences spf = Utils.getApp().getSharedPreferences("news", 0);
@@ -25,6 +33,10 @@ public class UserUtil {
         editor.apply();
     }
 
+    /**
+     * 如果用户信息类不为null。就直接返回，如果为null，就从本地SharedPreferences拿
+     * @return
+     */
     public User getUser() {
         if (user != null) {
             return user;
@@ -45,6 +57,9 @@ public class UserUtil {
         save(this.user);
     }
 
+    /**
+     * 退出登录时要清空本地数据。
+     */
     public void logout() {
         this.user = null;
         SharedPreferences spf = Utils.getApp().getSharedPreferences("news", 0);

@@ -53,6 +53,7 @@ public class ArticleReviewActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        //查询所有审核中的稿件
         BmobQuery<Article> bmobQuery = new BmobQuery<>();
         bmobQuery.addWhereEqualTo("status", "审核中");
         bmobQuery.findObjects(new FindListener<Article>() {

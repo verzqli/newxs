@@ -81,25 +81,29 @@ public class WriteArticleActivity extends BaseActivity {
         });
         picLayout.setOnClickListener(v -> {
             mediaLayout.setVisibility(View.GONE);
-            openMedia(MimeType.ofImage());
+            openMedia(true);
             isImage = true;
         });
         videoLayout.setOnClickListener(v -> {
             mediaLayout.setVisibility(View.GONE);
-            openMedia(MimeType.ofVideo());
+            openMedia(false);
             isImage = false;
         });
     }
 
-    private void openMedia(Set<MimeType> type) {
-        Matisse.from(this)
-                .choose(type)
-                .showSingleMediaType(true)
-                .capture(false)
-                .maxSelectable(1)
-                .theme(R.style.Matisse_Zhihu)
-                .imageEngine(new GlideEngine())
-                .forResult(REQUEST_CODE_CHOOSE);
+    private void openMedia(boolean isImage) {
+//        Matisse.from(this)
+//                .choose(type)
+//                .showSingleMediaType(true)
+//                .capture(false)
+//                .maxSelectable(1)
+//                .theme(R.style.Matisse_Zhihu)
+//                .imageEngine(new GlideEngine())
+//                .forResult(REQUEST_CODE_CHOOSE);
+        Intent intent = new Intent(this, MaterialListActivity.class);
+        intent.putExtra("isImage", isImage);
+        intent.putExtra("isGetResult", true);
+        startActivityForResult(intent, REQUEST_CODE_CHOOSE);
     }
 
     @Override
@@ -114,76 +118,81 @@ public class WriteArticleActivity extends BaseActivity {
             ToastUtils.showShort("请输入内容");
             return;
         }
-        if (TextUtils.isEmpty(url)) {
-            ToastUtils.showShort("请选择素材");
-            return;
-        }
+//        if (TextUtils.isEmpty(url)) {
+//            ToastUtils.showShort("请选择素材");
+//            return;
+//        }
         article.setTitle(title);
         article.setContent(content);
-        if (isImage) {
-            compressImage(url);
-        } else {
-            File file = new File(url);
-            if (file.length() > 15728640) {
-                ToastUtils.showShort("请选择大小15MB以下的视频");
-                return;
-            }
-            uploadFile(new File(url));
-        }
+        addArticle();
+        //因为发稿从素材库拿，所以压缩这里就不用了，不过为防止修改，暂时注释
 
+//        if (TextUtils.isEmpty(url)) {
+//            addArticle();
+//        } else {
+//            article.setMaterialType(isImage ? "0" : "1");
+//            if (isImage) {
+//                compressImage(url);
+//            } else {
+//                File file = new File(url);
+//                if (file.length() > 15728640) {
+//                    ToastUtils.showShort("请选择大小15MB以下的视频");
+//                    return;
+//                }
+//                uploadFile(new File(url));
+//            }
+//        }
     }
+//    private void compressImage(String url) {
+//        Luban.with(this)
+//                .load(url)
+//                .ignoreBy(100)
+//                .setTargetDir(outPath)
+//                .filter(path -> !(TextUtils.isEmpty(path) || path.toLowerCase().endsWith(".gif")))
+//                .setCompressListener(new OnCompressListener() {
+//                    @Override
+//                    public void onStart() {
+//                        // TODO 压缩开始前调用，可以在方法内启动 loading UI
+//                        showLoadDialog();
+//                    }
+//
+//                    @Override
+//                    public void onSuccess(File file) {
+//                        // TODO 压缩成功后调用，返回压缩后的图片文件
+//                        uploadFile(file);
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        // TODO 当压缩过程出现问题时调用
+//                        hideLoadDialog();
+//                    }
+//                }).launch();
+//    }
 
-    private void compressImage(String url) {
-        Luban.with(this)
-                .load(url)
-                .ignoreBy(100)
-                .setTargetDir(outPath)
-                .filter(path -> !(TextUtils.isEmpty(path) || path.toLowerCase().endsWith(".gif")))
-                .setCompressListener(new OnCompressListener() {
-                    @Override
-                    public void onStart() {
-                        // TODO 压缩开始前调用，可以在方法内启动 loading UI
-                        showLoadDialog();
-                    }
-
-                    @Override
-                    public void onSuccess(File file) {
-                        // TODO 压缩成功后调用，返回压缩后的图片文件
-
-                        uploadFile(file);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        // TODO 当压缩过程出现问题时调用
-                        hideLoadDialog();
-                    }
-                }).launch();
-    }
-
-    private void uploadFile(File file) {
-        showLoadDialog();
-        BmobFile bmobFile = new BmobFile(file);
-        bmobFile.uploadblock(new UploadFileListener() {
-            @Override
-            public void done(BmobException e) {
-
-                if (e == null) {
-                    url = bmobFile.getFileUrl();
-                    addArticle();
-                } else {
-                    hideLoadDialog();
-                    ToastUtils.showShort("上传失败，请重试");
-                }
-            }
-
-            @Override
-            public void onProgress(Integer value) {
-                // 返回的上传进度（百分比）
-                setDialogContent("正在上传:" + value + "%");
-            }
-        });
-    }
+//    private void uploadFile(File file) {
+//        showLoadDialog();
+//        BmobFile bmobFile = new BmobFile(file);
+//        bmobFile.uploadblock(new UploadFileListener() {
+//            @Override
+//            public void done(BmobException e) {
+//                if (e == null) {
+//                    url = bmobFile.getFileUrl();
+//                    article.setMaterialType(isImage ? "0" : "1");
+//                    addArticle();
+//                } else {
+//                    hideLoadDialog();
+//                    ToastUtils.showShort("上传失败，请重试");
+//                }
+//            }
+//
+//            @Override
+//            public void onProgress(Integer value) {
+//                // 返回的上传进度（百分比）
+//                setDialogContent("正在上传:" + value + "%");
+//            }
+//        });
+//    }
 
 
     /**
@@ -191,8 +200,10 @@ public class WriteArticleActivity extends BaseActivity {
      */
     private void addArticle() {
         showLoadDialog();
-        article.setMaterialUrl(url);
-        article.setMaterialType(isImage ? "0" : "1");
+        if (!TextUtils.isEmpty(url)) {
+            article.setMaterialUrl(url);
+            article.setMaterialType(isImage ? "0" : "1");
+        }
         article.setEditor(UserUtil.getInstance().getUser().getName());
         article.setEditorId(UserUtil.getInstance().getUser().getObjectId());
         article.save(new SaveListener<String>() {
@@ -214,8 +225,10 @@ public class WriteArticleActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
             //图片路径 同样视频地址也是这个 根据requestCode
-            url = Matisse.obtainPathResult(data).get(0);
-            articleMaterialImage.setUrl(url,isImage);
+//            url = Matisse.obtainPathResult(data).get(0);
+            url = data.getStringExtra("url");
+            articleMaterialImage.setUrl(url, isImage);
+
         }
     }
 }

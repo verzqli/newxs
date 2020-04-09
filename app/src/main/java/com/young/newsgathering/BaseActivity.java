@@ -12,6 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.gyf.immersionbar.ImmersionBar;
 import com.young.newsgathering.view.LoadDialog;
 
+/**
+ * activity的基类，一些基础的功能在这里写，让子类去继承
+ */
 public abstract class BaseActivity extends AppCompatActivity {
     private LoadDialog dialog;
 

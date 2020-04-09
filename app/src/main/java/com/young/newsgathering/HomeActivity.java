@@ -32,6 +32,8 @@ public class HomeActivity extends BaseActivity {
         list.add(WorkFragment.newInstance());
         list.add(fragment);
         list.add(PersonalFragment.newInstance());
+        //首页展示的四个页面，用最普通的viewpager+fragment来完成，这里用自定义viewpager禁止其左右滑动
+        //让他只靠下面四个tab点击跳转
         viewPager.setAdapter(new HomeAdapter(getSupportFragmentManager()));
         workLayout.setOnClickListener(v -> viewPager.setCurrentItem(0, false));
         newsLayout.setOnClickListener(v -> viewPager.setCurrentItem(1, false));
@@ -53,6 +55,8 @@ public class HomeActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        //这里是传递返回键监听给新闻界面，因为新闻界面是fragment，不好监听返回事件，所以这里把这个
+        //返回点击事件传递给它，方便他处理。
         if (viewPager.getCurrentItem() == 1) {
             if (!fragment.onBackPressed()) {
                 super.onBackPressed();

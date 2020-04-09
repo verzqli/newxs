@@ -69,7 +69,7 @@ public class PersonalFragment extends Fragment {
     }
 
     private void initView(View view) {
-        //获取内存中的用户信息
+        //获取本地保存的用户信息
         User user = UserUtil.getInstance().getUser();
         ((TextView) view.findViewById(R.id.name_text)).setText(user.getName());
         ((TextView) view.findViewById(R.id.job_text)).setText(user.getJob());
@@ -128,13 +128,15 @@ public class PersonalFragment extends Fragment {
             String url = Matisse.obtainPathResult(data).get(0);
             //选择图片后保存在本地后再上传到服务器（这里上传的是本地链接）
             UserUtil.getInstance().updateAvatar(url);
+            //这个是展示圆形头像
             Glide.with(avatarImage.getContext())
                     .load(UserUtil.getInstance().getUser().getAvatar())
                     .placeholder(R.drawable.icon_avatar)
                     .into(avatarImage);
+            //这个是展示圆形头像后面的模糊背景
             Glide.with(avatarBlurImage.getContext())
                     .load(UserUtil.getInstance().getUser().getAvatar())
-                    .transform(new BlurTransformation())
+                    .transform(new BlurTransformation())//这是我以前写的模糊功能，把图片转换成毛玻璃小锅显示出来
                     .placeholder(R.drawable.icon_avatar)
                     .into(avatarBlurImage);
             //压缩图片
@@ -162,12 +164,13 @@ public class PersonalFragment extends Fragment {
                     @Override
                     public void onSuccess(File file) {
                         // TODO 压缩成功后调用，返回压缩后的图片文件
-
+                        //图片压缩好后把图片上传
                         BmobFile bmobFile = new BmobFile(file);
                         bmobFile.uploadblock(new UploadFileListener() {
                             @Override
                             public void done(BmobException e) {
                                 if (e == null) {
+                                    //图片上传服务器成功后把图片的网络链接上传到数据库
                                     updateAvatar(bmobFile.getFileUrl());
                                 } else {
                                     ToastUtils.showShort("图片上传失败，请重试");
@@ -189,6 +192,7 @@ public class PersonalFragment extends Fragment {
     }
 
     private void updateAvatar(String fileUrl) {
+        //更新头像
         User user = UserUtil.getInstance().getUser();
         user.setAvatar(fileUrl);
         user.update(user.getObjectId(), new UpdateListener() {

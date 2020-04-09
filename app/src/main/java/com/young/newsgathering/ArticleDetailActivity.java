@@ -63,7 +63,7 @@ public class ArticleDetailActivity extends BaseActivity {
 
         } else {
             //只有是草稿的稿件才可以修改
-            if ("草稿".equals(article.getStatus())) {
+            if ("草稿".equals(article.getStatus())||"退回".equals(article.getStatus())) {
                 userEditLayout.setVisibility(View.VISIBLE);
                 //作废点击
                 userEditLayout.getChildAt(0).setOnClickListener(v -> {

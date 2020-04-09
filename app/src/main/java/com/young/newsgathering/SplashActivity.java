@@ -1,6 +1,7 @@
 package com.young.newsgathering;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import io.reactivex.functions.Consumer;
 
 import android.Manifest;
@@ -23,6 +24,7 @@ public class SplashActivity extends BaseActivity {
     protected void initView() {
 
     }
+
     @SuppressLint("CheckResult")
     @Override
     protected void initEvent() {
@@ -38,7 +40,7 @@ public class SplashActivity extends BaseActivity {
                             finish();
                         }
                     });
-        }else{
+        } else {
             jumpApp();
         }
 
@@ -47,6 +49,7 @@ public class SplashActivity extends BaseActivity {
     private void jumpApp() {
 
         User user = UserUtil.getInstance().getUser();
+        //判断本地有没有用户信息，就是以前有没有登陆过，登陆过的话直接跳转HomeActivity，没登录就去登录
         if (user == null) {
             baseStartActivity(MainActivity.class);
         } else {

@@ -49,16 +49,20 @@ public class MainActivity extends BaseActivity {
         }
         showLoadDialog();
         BmobQuery<User> query = new BmobQuery<User>();
+        //根据当前账户名去数据库用户表里查询是否有该用户
         query.addWhereEqualTo("account", account);
         query.findObjects(new FindListener<User>() {
             @Override
             public void done(List<User> userList, BmobException e) {
                 if (e == null) {
+                    //如果有该用户
                     if (userList.size() > 0) {
                         User user = userList.get(0);
+                        //判断用户的密码是否正确，正确就跳转主页
                         if (user.getPwd().equals(pwd)) {
                             UserUtil.getInstance().save(user);
                             startActivity(new Intent(MainActivity.this, HomeActivity.class));
+                            finish();
                         } else {
                             ToastUtils.showShort("密码错误");
                         }

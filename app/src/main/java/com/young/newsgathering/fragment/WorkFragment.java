@@ -51,6 +51,7 @@ public class WorkFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_work, container, false);
+        //这行是处理状态栏颜色的，无需在意
         ImmersionBar.with(this).statusBarDarkFont(true).init();
         initView(view);
         initEvent();
@@ -68,7 +69,7 @@ public class WorkFragment extends Fragment {
 
     private void initEvent() {
         writeLayout.setOnClickListener(v -> startActivity(new Intent(getActivity(), ArticleListActivity.class)));
-        //总编才有审稿功能
+        //总编才有审稿功能，所以当用户类型是总编时，才展示审稿图标
         if (UserUtil.getInstance().isAdmin()) {
             editLayout.setVisibility(View.VISIBLE);
             editLayout.setOnClickListener(v -> startActivity(new Intent(getActivity(), ArticleReviewActivity.class)));

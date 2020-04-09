@@ -1,12 +1,9 @@
 package com.young.newsgathering;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Color;
-import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -20,6 +17,9 @@ import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
+/**
+ * 稿件进度页面
+ */
 public class ProgressActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
@@ -48,8 +48,6 @@ public class ProgressActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        BmobQuery<Article> bmobQuery1 = new BmobQuery<>();
-        BmobQuery<Article> bmobQuery2 = new BmobQuery<>();
         if (UserUtil.getInstance().isAdmin()) {
             BmobQuery<Article> bmobQuery = new BmobQuery<>();
             //总编查询所有不为草稿的稿件（审核中，退回，签发）

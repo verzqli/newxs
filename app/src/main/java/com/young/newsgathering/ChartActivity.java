@@ -205,7 +205,7 @@ public class ChartActivity extends BaseActivity {
                 }
             }
         }
-        //模拟数据
+
         ArrayList<PieEntry> entries = new ArrayList<>();
         if (!UserUtil.getInstance().isAdmin()) {
             entries.add(new PieEntry(draftCount, "草稿"));

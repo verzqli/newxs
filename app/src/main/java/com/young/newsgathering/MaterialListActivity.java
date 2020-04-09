@@ -13,33 +13,22 @@ import cn.bmob.v3.listener.UploadFileListener;
 import top.zibin.luban.Luban;
 import top.zibin.luban.OnCompressListener;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.media.MediaMetadataRetriever;
-import android.media.ThumbnailUtils;
-import android.os.Build;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
-import com.young.newsgathering.entity.Article;
 import com.young.newsgathering.entity.Material;
-import com.young.newsgathering.entity.User;
 import com.young.newsgathering.view.MaterialItemImage;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
-import com.zhihu.matisse.internal.ui.widget.MediaGrid;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -51,6 +40,12 @@ public class MaterialListActivity extends BaseActivity {
     //判断是否是图片素材库，默认是
     private boolean isImage = true;
     private String outPath = Environment.getExternalStorageDirectory() + "/pic";
+    /**
+     * 素材库界面有两个进来的方式
+     * 一个是素材功能，一个是写稿功能
+     * 这个boolean判断当前是否是从写稿功能进来的，如果是，那么点击item就不是预览，而是返回数据
+     */
+    private boolean isGetResult = false;
 
     @Override
     protected int getLayoutId() {
@@ -60,15 +55,33 @@ public class MaterialListActivity extends BaseActivity {
     @Override
     protected void initView() {
         isImage = getIntent().getBooleanExtra("isImage", true);
+        isGetResult = getIntent().getBooleanExtra("isGetResult", false);
         setToolBar(isImage ? "图片素材" : "视频素材", R.drawable.icon_toolbar_menu);
+
         list = new ArrayList<>();
         adapter = new MaterialListAdapter(list);
         materialRecyclerView = findViewById(R.id.material_recyclerview);
         materialRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
         materialRecyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener((adapter, view, position) -> {
-            Utils.article = (Article) adapter.getData().get(position);
-            baseStartActivity(ArticleDetailActivity.class);
+            String url = ((Material) adapter.getItem(position)).getUrl();
+            if (isGetResult) {
+                Intent intent = new Intent();
+                intent.putExtra("url", url);
+                setResult(RESULT_OK, intent);
+                finish();
+            } else {
+                if (isImage) {
+                    Intent intent = new Intent(this, PreviewImageActivity.class);
+                    intent.putExtra("url", url);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(this, PreviewVideoActivity.class);
+                    intent.putExtra("url", url);
+                    startActivity(intent);
+                }
+            }
+
         });
     }
 
@@ -79,6 +92,7 @@ public class MaterialListActivity extends BaseActivity {
 
     private void requestmaterialData() {
         showLoadDialog();
+        //请求素材数据，根据传进来的isImage判断是拿适配素材还是图片素材
         BmobQuery<Material> bmobQuery = new BmobQuery<>();
         bmobQuery.addWhereEqualTo("type", isImage ? "0" : "1");
         bmobQuery.findObjects(new FindListener<Material>() {
@@ -113,13 +127,19 @@ public class MaterialListActivity extends BaseActivity {
                 .forResult(REQUEST_CODE_CHOOSE);
     }
 
+    /**
+     * 这里是返回你进去相册点击后返回的照片或视频链接，
+     * 然后把它上传到服务器拿到网络链接后再传到数据库表里
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK && data != null) {
             //图片路径 同样视频地址也是这个 根据requestCode
             String url = Matisse.obtainPathResult(data).get(0);
-
             //压缩图片
             if (isImage) {
                 compressImage(url);
@@ -129,6 +149,7 @@ public class MaterialListActivity extends BaseActivity {
                     ToastUtils.showShort("请选择大小15MB以下的视频");
                     return;
                 }
+                showLoadDialog();
                 uploadFile(new File(url));
             }
         }
@@ -151,25 +172,23 @@ public class MaterialListActivity extends BaseActivity {
                     @Override
                     public void onSuccess(File file) {
                         // TODO 压缩成功后调用，返回压缩后的图片文件
-
                         uploadFile(file);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         // TODO 当压缩过程出现问题时调用
+                        Log.i("测试测试", "压缩失败" + e.getMessage());
                         hideLoadDialog();
                     }
                 }).launch();
     }
 
     private void uploadFile(File file) {
-        showLoadDialog();
         BmobFile bmobFile = new BmobFile(file);
         bmobFile.uploadblock(new UploadFileListener() {
             @Override
             public void done(BmobException e) {
-
                 if (e == null) {
                     uploadMaterial(bmobFile.getFileUrl());
                 } else {
@@ -198,6 +217,7 @@ public class MaterialListActivity extends BaseActivity {
                     ToastUtils.showShort("添加素材成功");
                     adapter.addData(material);
                 } else {
+                    Log.i("测试测试", "添加失败" + e.getMessage());
                     Log.e("BMOB", e.toString());
                     ToastUtils.showShort("添加失败，请重试");
                 }
@@ -213,7 +233,8 @@ public class MaterialListActivity extends BaseActivity {
         @Override
         protected void convert(BaseViewHolder helper, Material item) {
             MaterialItemImage imageView = helper.getView(R.id.image);
-            imageView.setUrl(item.getUrl(), isImage);
+            Glide.with(getContext()).load(item.getUrl()).into(imageView);
+//            imageView.setUrl(item.getUrl(), isImage);
         }
     }
 }

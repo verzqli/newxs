@@ -10,7 +10,7 @@ import android.webkit.WebView;
 /**
  * @author verzqli
  * @date 2020/3/21
- * @Desc
+ * @Desc 有些机型加载webview会闪退，这里做一个自定义webview做一些限制
  */
 public class LollipopFixedWebView extends WebView {
 
